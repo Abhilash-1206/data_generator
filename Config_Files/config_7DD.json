@@ -1,0 +1,118 @@
+[
+  {
+    "filename": "Test_Data_Gen_1",
+    "num_rows": 100,
+    "format": {
+      "type" : "parquet",
+      "extension": "parquet"
+  },
+    "db_type": {
+      "type": "postgres",
+      "username": "",
+      "password": "",
+      "host": "",
+      "database": "",
+      "schema": "",
+      "port": 5432
+    },
+    "schema": {
+      "Id": {
+        "type": "number",
+        "is_unique": "yes",
+        "is_null": "no"
+      },
+      "Name": {
+        "type": "text"
+      },
+      "Age": {
+        "type": "number",
+        "minvalue": 1,
+        "maxvalue": 150
+      },
+      "Salary": {
+        "type": "double"
+      },
+      "DOB": {
+        "type": "Date"
+      },
+      "datetime": {
+        "type": "Datetime"
+      },
+      "Address": {
+        "type": "varchar"
+      },
+      "Json": {
+        "type": "json"
+      },
+      "Gender": {
+        "type": "text"
+      },
+      "is_Indian": {
+        "type": "boolean",
+        "is_yes_no": true
+      },
+      "Additional_Info": {
+        "type": "text",
+        "is_null": "yes",
+        "is_empty": "yes"
+      }
+    }
+  },
+  {
+    "filename": "Test_Data_Gen_2",
+    "num_rows": 100,
+    "format": {
+      "type" : "csv",
+      "delimiter": ",",
+      "extension": "csv"
+  },
+    "db_type": {
+      "type": "mongoDB",
+      "username": "",
+      "password": "",
+      "host": "",
+      "database": "",
+      "port": 27017
+    },
+    "schema": {
+      "Id": {
+        "type": "int",
+        "is_unique": "yes",
+        "is_null": "no"
+      },
+      "Name": {
+        "type": "text"
+      },
+      "Age": {
+        "type": "int",
+        "minvalue": 1,
+        "maxvalue": 150
+      },
+      "Salary": {
+        "type": "double"
+      },
+      "DOB": {
+        "type": "Date"
+      },
+      "datetime": {
+        "type": "Datetime"
+      },
+      "Address": {
+        "type": "text"
+      },
+      "Json": {
+        "type": "json"
+      },
+      "Gender": {
+        "type": "text"
+      },
+      "is_Indian": {
+        "type": "boolean",
+        "is_yes_no": false
+      },
+      "Additional_Info": {
+        "type": "text"
+      }
+    }
+  }
+]
