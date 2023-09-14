@@ -1,0 +1,9 @@
+{
+  "sftp_host": "",
+  "port": 22,
+  "username": "",
+  "password": "",
+  "region_name": "",
+  "access_key_id": "" ,
+  "secret_access_key": ""
+}
