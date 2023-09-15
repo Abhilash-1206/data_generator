@@ -74,7 +74,7 @@ def add_file_to_remote_location(dirpath, host, username, password, region_name, 
 
 # Gets all the required inputs from the config file.
 def get_inputs(directory_path):
-    with open("C:\\Users\\ak1206\\PycharmProjects\\Automated_Data_Generator\\Config_Files\\remote_details.json",
+    with open("Config_Files\\remote_details.json",
               "r") as f:
         try:
             creds = json.load(f)
