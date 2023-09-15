@@ -1,16 +1,18 @@
+# importing all the required packages
+
 import pandas as pd
 import random
 import string
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from faker import Faker
 import json
 import names
-from random_word import RandomWords
 
-
+# Creating object to the Faker class
 fake = Faker()
 
 
+# Generate data for different data types based on the is_null and is_empty parameters
 def is_null_and_is_empty_func(col_type, column, num_rows, data, is_yes_no):
     if col_type == "number" or col_type == 'int':
         data[column] = [random.choice(random.randint(1, 10000), "", "NULL") for _ in range(num_rows)]
@@ -29,6 +31,7 @@ def is_null_and_is_empty_func(col_type, column, num_rows, data, is_yes_no):
             data[column] = [random.choice([True, False, "NULL", ""]) for _ in range(num_rows)]
 
 
+# Generate data for different data types based on the is_null parameter
 def is_null_func(col_type, column, num_rows, data, is_yes_no):
     if col_type == "number" or col_type == 'int':
         data[column] = [random.choice(random.randint(1, 10000), "NULL") for _ in range(num_rows)]
@@ -47,6 +50,7 @@ def is_null_func(col_type, column, num_rows, data, is_yes_no):
             data[column] = [random.choice([True, False, "NULL"]) for _ in range(num_rows)]
 
 
+# Generate data for different data types based on the is_empty parameter
 def is_empty_func(col_type, column, num_rows, data, is_yes_no):
     if col_type == "number" or col_type == 'int':
         data[column] = [random.choice(random.randint(1, 10000), "") for _ in range(num_rows)]
@@ -65,20 +69,42 @@ def is_empty_func(col_type, column, num_rows, data, is_yes_no):
             data[column] = [random.choice([True, False, ""]) for _ in range(num_rows)]
 
 
+# Generates random data for all the data types
 def generate_random_data(schema, num_rows):
     data = {}
-    r = RandomWords()
     for column, col_type in schema.items():
         column_type = col_type['type'].lower()
         column = column.lower()
-        Is_Unique = str(col_type.get("is_unique")).lower()
-        IS_Null = str(col_type.get("is_null")).lower()
-        Is_Empty = str(col_type.get("is_empty")).lower()
-        Min_Value = col_type.get("minvalue")
-        Max_Value = col_type.get("maxvalue")
-        is_yes_no = col_type.get("is_yes_no")
+        is_unique = str(col_type.get("is_unique")).lower()
+        is_null = str(col_type.get("is_null")).lower()
+        is_empty = str(col_type.get("is_empty")).lower()
+        min_value = col_type.get("minvalue")
+        max_value = col_type.get("maxvalue")
+        is_yes_no = col_type.get("is_yes_no")   # parameter that decides whether to use True or yes for boolean values
 
-        if column_type == 'date':
+        if column_type == 'number' or column_type == 'int':
+
+            if is_unique == 'yes' and is_null == 'no':
+                primary_key = list(range(1, num_rows + 1))
+                random.shuffle(primary_key)
+                data[column] = primary_key
+
+            elif min_value and max_value:
+                data[column] = [random.randint(min_value, max_value) for _ in range(num_rows)]
+
+            elif is_null == "yes" and is_empty == "yes":
+                is_null_and_is_empty_func(column_type, column, num_rows, data, is_yes_no)
+
+            elif is_null == "yes":
+                is_null_func(column_type, column, num_rows, data, is_yes_no)
+
+            elif is_empty == "yes":
+                is_empty_func(column_type, column, num_rows, data, is_yes_no)
+
+            else:
+                data[column] = [random.randint(1, 10000) for _ in range(num_rows)]
+
+        elif column_type == 'date':
             start_date = datetime(1950, 1, 1)
             end_date = datetime.now()
             random_dates = [start_date + timedelta(days=random.randint(1, (end_date - start_date).days)) for _ in
@@ -87,15 +113,15 @@ def generate_random_data(schema, num_rows):
 
         elif column_type == 'datetime':
 
-            if column == 'segstart_utc':
+            if column == 'start_time':
                 start_date = datetime(1950, 1, 1)
                 end_date = datetime(2010, 1, 1)
                 random_datetime = [start_date + timedelta(days=random.randint(1, (end_date - start_date).days),
                                                           seconds=random.randint(0, 86400)) for _ in range(num_rows)]
                 data[column] = [dt.strftime('%Y-%m-%d %H:%M:%S') for dt in random_datetime]
 
-            elif column == 'segstop_utc':
-                start_dates = pd.to_datetime(data['segstart_utc'], format='%Y-%m-%d %H:%M:%S')
+            elif column == 'end_time':
+                start_dates = pd.to_datetime(data['start_time'], format='%Y-%m-%d %H:%M:%S')
                 end_dates = start_dates + pd.to_timedelta([random.randint(1, 4745) for _ in range(num_rows)], unit='D')
                 data[column] = [dt.strftime('%Y-%m-%d %H:%M:%S') for dt in end_dates]
 
@@ -106,37 +132,15 @@ def generate_random_data(schema, num_rows):
                                                           seconds=random.randint(0, 86400)) for _ in range(num_rows)]
                 data[column] = [dt.strftime('%Y-%m-%d %H:%M:%S') for dt in random_datetime]
 
-        elif column_type == 'number' or column_type == 'int':
-
-            if Is_Unique == 'yes' and IS_Null == 'no':
-                primary_key = list(range(1, num_rows + 1))
-                random.shuffle(primary_key)
-                data[column] = primary_key
-
-            elif Min_Value and Max_Value:
-                data[column] = [random.randint(Min_Value, Max_Value) for _ in range(num_rows)]
-
-            elif IS_Null == "yes" and Is_Empty == "yes":
-                is_null_and_is_empty_func(column_type, column, num_rows, data, is_yes_no)
-
-            elif IS_Null == "yes":
-                is_null_func(column_type, column, num_rows, data, is_yes_no)
-
-            elif Is_Empty == "yes":
-                is_empty_func(column_type, column, num_rows, data, is_yes_no)
-
-            else:
-                data[column] = [random.randint(1, 10000) for _ in range(num_rows)]
-
         elif column_type == 'text' or column_type == 'varchar':
 
-            if IS_Null == "yes" and Is_Empty == "yes":
+            if is_null == "yes" and is_empty == "yes":
                 is_null_and_is_empty_func(column_type, column, num_rows, data, is_yes_no)
 
-            elif IS_Null == "yes":
+            elif is_null == "yes":
                 is_null_func(column_type, column, num_rows, data, is_yes_no)
 
-            elif Is_Empty == "yes":
+            elif is_empty == "yes":
                 is_empty_func(column_type, column, num_rows, data, is_yes_no)
 
             elif column == 'gender':
@@ -155,13 +159,13 @@ def generate_random_data(schema, num_rows):
 
         elif column_type == 'double':
 
-            if IS_Null == "yes" and Is_Empty == 'yes':
+            if is_null == "yes" and is_empty == 'yes':
                 is_null_and_is_empty_func(column_type, column, num_rows, data, is_yes_no)
 
-            elif IS_Null == "yes":
+            elif is_null == "yes":
                 is_null_func(column_type, column, num_rows, data, is_yes_no)
 
-            elif Is_Empty == 'yes':
+            elif is_empty == 'yes':
                 is_empty_func(column_type, column, num_rows, data, is_yes_no)
 
             else:
@@ -175,13 +179,13 @@ def generate_random_data(schema, num_rows):
 
         elif column_type == 'boolean':
 
-            if IS_Null == "yes" and Is_Empty == 'yes':
+            if is_null == "yes" and is_empty == 'yes':
                 is_null_and_is_empty_func(column_type, column, num_rows, data, is_yes_no)
 
-            elif IS_Null == "yes":
+            elif is_null == "yes":
                 is_null_func(column_type, column, num_rows, data, is_yes_no)
 
-            elif Is_Empty == 'yes':
+            elif is_empty == 'yes':
                 is_empty_func(column_type, column, num_rows, data, is_yes_no)
 
             else:
@@ -191,6 +195,6 @@ def generate_random_data(schema, num_rows):
                     data[column] = [random.choice([True, False]) for _ in range(num_rows)]
 
         elif column_type == 'list':
-            data[column] = [[fake.phone_number(), names.get_first_name(), r.get_random_word()] for _ in range(num_rows)]
+            data[column] = [[fake.phone_number(), names.get_first_name()] for _ in range(num_rows)]
 
     return data
