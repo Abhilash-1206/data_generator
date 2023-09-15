@@ -54,7 +54,7 @@ The synthetic data generator takes a config file as an and creates file for each
 ]
 ```
 
-The config file in a list of jsons, that contains different keys like filename, num_rows,schema,format,db_type.
+The config file is a list of jsons, that contains different keys like filename, num_rows,schema,format,db_type.
 
 The format and db_type keys are optional, as you can see in the above config,
 * The first json provides info about all the keys and it specifies what format do the file need to be and in which database a table need to be created
