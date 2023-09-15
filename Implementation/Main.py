@@ -1,5 +1,6 @@
+# import all the packages
+
 import pandas as pd
-from datetime import datetime
 import json
 import Generate_Data
 import Save_as_File
@@ -7,9 +8,10 @@ import Save_as_Table
 import Files_to_Remote_Location
 
 
+# Reads the config file and gets the required inputs
 def schemas_as_input():
-    path = "7DD"
-    with open("Config_Files\\config_7DD.json", "r") as f:
+    path_to_store_files = "Test_Files\\"
+    with open("Config_Files\\config.json", "r") as f:
         try:
             files_data = json.load(f)
             for file_info in files_data:
@@ -22,15 +24,14 @@ def schemas_as_input():
                 # Generate Data for each schema
                 df = pd.DataFrame(Generate_Data.generate_random_data(schema, num_rows))
 
-                # Creating a separate csv file for each schema
-                Save_as_File.save_as_file(formats, df, path, filename)
+                # Storing data as a file in the specified format
+                Save_as_File.save_as_file(formats, df, path_to_store_files, filename)
 
                 # Storing data in a table
                 Save_as_Table.save_as_table(db_type, df, filename)
 
             # storing the generated files in the remote locations
-            
-            Files_to_Remote_Location.get_path(path)
+            Files_to_Remote_Location.get_path(path_to_store_files)
             print("completed...")
 
         except json.JSONDecodeError:
